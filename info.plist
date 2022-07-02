@@ -19,6 +19,8 @@
 				<false/>
 			</dict>
 		</array>
+		<key>4D3E0BB2-468F-4C5A-81C4-DD3C5515B839</key>
+		<array/>
 		<key>53BF5810-7308-4550-A1C3-92DC01964658</key>
 		<array>
 			<dict>
@@ -58,11 +60,23 @@
 				<false/>
 			</dict>
 		</array>
-		<key>A46BBC3D-A323-49F8-90F1-A58975C5AF06</key>
+		<key>8E77B0B8-F255-4BD0-80DB-2A076A9D5D51</key>
 		<array>
 			<dict>
 				<key>destinationuid</key>
-				<string>9F8BAD89-AA36-49E3-AC08-2F634A88C595</string>
+				<string>4D3E0BB2-468F-4C5A-81C4-DD3C5515B839</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>sourceoutputuid</key>
+				<string>DE5F4930-B887-4150-AC5A-8CB90A065BAF</string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+			<dict>
+				<key>destinationuid</key>
+				<string>BE074103-A87A-4D58-ADC1-B99F5B0B2402</string>
 				<key>modifiers</key>
 				<integer>0</integer>
 				<key>modifiersubtext</key>
@@ -97,6 +111,19 @@
 				<false/>
 			</dict>
 		</array>
+		<key>BE074103-A87A-4D58-ADC1-B99F5B0B2402</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>9F8BAD89-AA36-49E3-AC08-2F634A88C595</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
 		<key>D172CEA8-0DE7-4AA2-BBDA-7819B2252316</key>
 		<array>
 			<dict>
@@ -114,7 +141,7 @@
 		<array>
 			<dict>
 				<key>destinationuid</key>
-				<string>A46BBC3D-A323-49F8-90F1-A58975C5AF06</string>
+				<string>8E77B0B8-F255-4BD0-80DB-2A076A9D5D51</string>
 				<key>modifiers</key>
 				<integer>0</integer>
 				<key>modifiersubtext</key>
@@ -300,8 +327,7 @@ fi</string>
 				<key>runningsubtext</key>
 				<string></string>
 				<key>script</key>
-				<string>
-# check macos version
+				<string># check macos version
 macOSVersion=$(sw_vers -productVersion | cut -d '.' -f 1,2)
 
 function version { echo "$@" | awk -F. '{ printf("%d%03d%03d%03d\n", $1,$2,$3,$4); }'; }
@@ -314,7 +340,20 @@ fi
 
 # check app
 currentAppID=$(osascript -e "tell application (path to frontmost application as text) to get id")
+
+# for devonthink
+if [ "${currentAppID}" = "com.devon-technologies.think3" ]; then
+     echo $(osascript "/Users/lushuliang/Dev/GitHub/my-alfred-workflows/DEVONthink Helper/list-smart-group.scpt" "工作,思维,知识" ".last" "true" "true")
+
+exit 1
+fi
+# for devonthink
+
+
+
+
 export currentAppPath=$(osascript -e 'tell application "Finder" to get text 1 thru -2 of POSIX path of (path to frontmost application)')
+
 if [ "${currentAppID}" = "com.apple.finder" ]; then
     MRUfile="${HOME}/Library/Preferences/com.apple.finder.plist"
 elif [ "${currentAppID}" = "com.microsoft.Word" ] || [ "${currentAppID}" = "com.microsoft.Powerpoint" ] || [ "${currentAppID}" = "com.microsoft.Excel" ] ; then
@@ -330,15 +369,14 @@ else
     MRUfile="${HOME}/Library/Application Support/com.apple.sharedfilelist/com.apple.LSSharedFileList.ApplicationRecentDocuments/${currentAppID}.${MRUfileExt}"
 fi
 
-
 if [ -f "${MRUfile}" ]; then
-    if [ $(version $macOSVersion) -lt $(version "12.3") ]; then
-        /usr/bin/python -O main.py "${MRUfile}"
+        if [ $(version $macOSVersion) -lt $(version "12.3") ]; then
+            /usr/bin/python -O main.py "${MRUfile}"
+        else
+            /usr/bin/python3 -O main.py "${MRUfile}"
+        fi
     else
-        /usr/bin/python3 -O main.py "${MRUfile}"
-    fi
-else
-    echo '{"items": [{"title": "None Recent Record for the foremost app","subtitle": "(*´･д･)?"}]}'
+        echo '{"items": [{"title": "None Recent Record for the foremost app","subtitle": "(*´･д･)?"}]}'
 fi</string>
 				<key>scriptargtype</key>
 				<integer>1</integer>
@@ -363,25 +401,56 @@ fi</string>
 		<dict>
 			<key>config</key>
 			<dict>
-				<key>json</key>
-				<string>{
-  "alfredworkflow" : {
-    "arg" : "{query}",
-    "config" : {
-      "openwith" : "{var:currentAppPath}",
-      "sourcefile" : ""
-    },
-    "variables" : {
-    }
-  }
-}</string>
+				<key>concurrently</key>
+				<false/>
+				<key>escaping</key>
+				<integer>68</integer>
+				<key>script</key>
+				<string>open "{query}"</string>
+				<key>scriptargtype</key>
+				<integer>0</integer>
+				<key>scriptfile</key>
+				<string></string>
+				<key>type</key>
+				<integer>5</integer>
 			</dict>
 			<key>type</key>
-			<string>alfred.workflow.utility.json</string>
+			<string>alfred.workflow.action.script</string>
 			<key>uid</key>
-			<string>A46BBC3D-A323-49F8-90F1-A58975C5AF06</string>
+			<string>4D3E0BB2-468F-4C5A-81C4-DD3C5515B839</string>
 			<key>version</key>
-			<integer>1</integer>
+			<integer>2</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>action</key>
+				<integer>0</integer>
+				<key>argument</key>
+				<integer>0</integer>
+				<key>focusedappvariable</key>
+				<false/>
+				<key>focusedappvariablename</key>
+				<string></string>
+				<key>hotkey</key>
+				<integer>0</integer>
+				<key>hotmod</key>
+				<integer>0</integer>
+				<key>hotstring</key>
+				<string></string>
+				<key>leftcursor</key>
+				<false/>
+				<key>modsmode</key>
+				<integer>0</integer>
+				<key>relatedAppsMode</key>
+				<integer>0</integer>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.trigger.hotkey</string>
+			<key>uid</key>
+			<string>5459E1D5-34AA-4E81-AAC7-8D52C4077AE9</string>
+			<key>version</key>
+			<integer>2</integer>
 		</dict>
 		<dict>
 			<key>config</key>
@@ -444,33 +513,25 @@ fi</string>
 		<dict>
 			<key>config</key>
 			<dict>
-				<key>action</key>
-				<integer>0</integer>
-				<key>argument</key>
-				<integer>0</integer>
-				<key>focusedappvariable</key>
-				<false/>
-				<key>focusedappvariablename</key>
-				<string></string>
-				<key>hotkey</key>
-				<integer>0</integer>
-				<key>hotmod</key>
-				<integer>0</integer>
-				<key>hotstring</key>
-				<string></string>
-				<key>leftcursor</key>
-				<false/>
-				<key>modsmode</key>
-				<integer>0</integer>
-				<key>relatedAppsMode</key>
-				<integer>0</integer>
+				<key>json</key>
+				<string>{
+  "alfredworkflow" : {
+    "arg" : "{query}",
+    "config" : {
+      "openwith" : "{var:currentAppPath}",
+      "sourcefile" : ""
+    },
+    "variables" : {
+    }
+  }
+}</string>
 			</dict>
 			<key>type</key>
-			<string>alfred.workflow.trigger.hotkey</string>
+			<string>alfred.workflow.utility.json</string>
 			<key>uid</key>
-			<string>5459E1D5-34AA-4E81-AAC7-8D52C4077AE9</string>
+			<string>BE074103-A87A-4D58-ADC1-B99F5B0B2402</string>
 			<key>version</key>
-			<integer>2</integer>
+			<integer>1</integer>
 		</dict>
 		<dict>
 			<key>config</key>
@@ -560,6 +621,38 @@ fi
 			<key>version</key>
 			<integer>3</integer>
 		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>conditions</key>
+				<array>
+					<dict>
+						<key>inputstring</key>
+						<string></string>
+						<key>matchcasesensitive</key>
+						<false/>
+						<key>matchmode</key>
+						<integer>4</integer>
+						<key>matchstring</key>
+						<string>devonthink</string>
+						<key>outputlabel</key>
+						<string>open with devonthink</string>
+						<key>uid</key>
+						<string>DE5F4930-B887-4150-AC5A-8CB90A065BAF</string>
+					</dict>
+				</array>
+				<key>elselabel</key>
+				<string>else</string>
+				<key>hideelse</key>
+				<false/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.utility.conditional</string>
+			<key>uid</key>
+			<string>8E77B0B8-F255-4BD0-80DB-2A076A9D5D51</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
 	</array>
 	<key>readme</key>
 	<string>Website: https://github.com/mpco/AlfredWorkflow-Recent-Documents</string>
@@ -568,82 +661,100 @@ fi
 		<key>242EA50D-B03A-4278-A412-B4AFC16AC51F</key>
 		<dict>
 			<key>xpos</key>
-			<integer>100</integer>
+			<real>100</real>
 			<key>ypos</key>
-			<integer>210</integer>
+			<real>210</real>
+		</dict>
+		<key>4D3E0BB2-468F-4C5A-81C4-DD3C5515B839</key>
+		<dict>
+			<key>note</key>
+			<string>Open with DEVONthink Editor</string>
+			<key>xpos</key>
+			<real>595</real>
+			<key>ypos</key>
+			<real>335</real>
 		</dict>
 		<key>53BF5810-7308-4550-A1C3-92DC01964658</key>
 		<dict>
 			<key>xpos</key>
-			<integer>100</integer>
+			<real>100</real>
 			<key>ypos</key>
-			<integer>540</integer>
+			<real>540</real>
 		</dict>
 		<key>5459E1D5-34AA-4E81-AAC7-8D52C4077AE9</key>
 		<dict>
 			<key>xpos</key>
-			<integer>100</integer>
+			<real>100</real>
 			<key>ypos</key>
-			<integer>380</integer>
+			<real>380</real>
 		</dict>
 		<key>79D60C12-3480-4744-93FD-5B6AA769F31A</key>
 		<dict>
 			<key>xpos</key>
-			<integer>100</integer>
+			<real>100</real>
 			<key>ypos</key>
-			<integer>50</integer>
+			<real>50</real>
+		</dict>
+		<key>8E77B0B8-F255-4BD0-80DB-2A076A9D5D51</key>
+		<dict>
+			<key>xpos</key>
+			<real>440</real>
+			<key>ypos</key>
+			<real>560</real>
 		</dict>
 		<key>9F8BAD89-AA36-49E3-AC08-2F634A88C595</key>
 		<dict>
 			<key>xpos</key>
-			<integer>700</integer>
+			<real>700</real>
 			<key>ypos</key>
-			<integer>50</integer>
-		</dict>
-		<key>A46BBC3D-A323-49F8-90F1-A58975C5AF06</key>
-		<dict>
-			<key>xpos</key>
-			<integer>470</integer>
-			<key>ypos</key>
-			<integer>240</integer>
+			<real>50</real>
 		</dict>
 		<key>B4CFDC4F-AF3F-47C2-8100-476F7E6FF72E</key>
 		<dict>
 			<key>note</key>
 			<string>Recent Apps</string>
 			<key>xpos</key>
-			<integer>270</integer>
+			<real>270</real>
 			<key>ypos</key>
-			<integer>50</integer>
+			<real>50</real>
 		</dict>
 		<key>B6340DCC-2D0D-4367-BAC9-C1D922545CB0</key>
 		<dict>
 			<key>note</key>
 			<string>Recent Folders</string>
 			<key>xpos</key>
-			<integer>270</integer>
+			<real>270</real>
 			<key>ypos</key>
-			<integer>540</integer>
+			<real>540</real>
+		</dict>
+		<key>BE074103-A87A-4D58-ADC1-B99F5B0B2402</key>
+		<dict>
+			<key>xpos</key>
+			<real>760</real>
+			<key>ypos</key>
+			<real>500</real>
 		</dict>
 		<key>D172CEA8-0DE7-4AA2-BBDA-7819B2252316</key>
 		<dict>
 			<key>note</key>
 			<string>Recent Documents</string>
 			<key>xpos</key>
-			<integer>270</integer>
+			<real>270</real>
 			<key>ypos</key>
-			<integer>380</integer>
+			<real>380</real>
 		</dict>
 		<key>FEEBCB26-E74C-411D-9DC4-B8E92B0A9DA8</key>
 		<dict>
 			<key>note</key>
 			<string>Foremost App's Recent Documents</string>
 			<key>xpos</key>
-			<integer>270</integer>
+			<real>270</real>
 			<key>ypos</key>
-			<integer>210</integer>
+			<real>210</real>
 		</dict>
 	</dict>
+	<key>userconfigurationconfig</key>
+	<array/>
 	<key>variables</key>
 	<dict>
 		<key>ExcludedFiles</key>
