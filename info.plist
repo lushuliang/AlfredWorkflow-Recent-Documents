@@ -84,6 +84,18 @@
 				<key>vitoclose</key>
 				<false/>
 			</dict>
+			<dict>
+				<key>destinationuid</key>
+				<string>835A1179-8ED0-4D9D-9005-0E12281DF6D8</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>sourceoutputuid</key>
+				<string>B0F360C9-C006-4C4A-882F-1C17F6A8FC7B</string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
 		</array>
 		<key>B4CFDC4F-AF3F-47C2-8100-476F7E6FF72E</key>
 		<array>
@@ -161,6 +173,21 @@
 	<string>Recent Documents / Apps</string>
 	<key>objects</key>
 	<array>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>openwith</key>
+				<string></string>
+				<key>sourcefile</key>
+				<string></string>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.openfile</string>
+			<key>uid</key>
+			<string>9F8BAD89-AA36-49E3-AC08-2F634A88C595</string>
+			<key>version</key>
+			<integer>3</integer>
+		</dict>
 		<dict>
 			<key>config</key>
 			<dict>
@@ -256,21 +283,6 @@ fi</string>
 		<dict>
 			<key>config</key>
 			<dict>
-				<key>openwith</key>
-				<string></string>
-				<key>sourcefile</key>
-				<string></string>
-			</dict>
-			<key>type</key>
-			<string>alfred.workflow.action.openfile</string>
-			<key>uid</key>
-			<string>9F8BAD89-AA36-49E3-AC08-2F634A88C595</string>
-			<key>version</key>
-			<integer>3</integer>
-		</dict>
-		<dict>
-			<key>config</key>
-			<dict>
 				<key>action</key>
 				<integer>0</integer>
 				<key>argument</key>
@@ -305,7 +317,7 @@ fi</string>
 				<key>alfredfiltersresults</key>
 				<true/>
 				<key>alfredfiltersresultsmatchmode</key>
-				<integer>0</integer>
+				<integer>2</integer>
 				<key>argumenttreatemptyqueryasnil</key>
 				<false/>
 				<key>argumenttrimmode</key>
@@ -327,7 +339,20 @@ fi</string>
 				<key>runningsubtext</key>
 				<string></string>
 				<key>script</key>
-				<string># check macos version
+				<string>osascript -e 'tell application "Keyboard Maestro Engine" to do script "29015D61-19DE-46B8-885A-976CED033F7C"'
+RecentDocumentsAlfredJson=$(osascript -e 'tell application "Keyboard Maestro Engine" to getvariable "RecentDocumentsAlfredJson"')
+
+if [ ! -z "$RecentDocumentsAlfredJson" ]; then
+   echo $RecentDocumentsAlfredJson
+   exit 1
+fi
+
+
+# check app
+currentAppID=$(osascript -e "tell application (path to frontmost application as text) to get id")
+
+
+# check macos version
 macOSVersion=$(sw_vers -productVersion | cut -d '.' -f 1,2)
 
 function version { echo "$@" | awk -F. '{ printf("%d%03d%03d%03d\n", $1,$2,$3,$4); }'; }
@@ -337,19 +362,6 @@ if [ $(version $macOSVersion) -le $(version "10.12") ]; then
 else
     MRUfileExt="sfl2"
 fi
-
-# check app
-currentAppID=$(osascript -e "tell application (path to frontmost application as text) to get id")
-
-# for devonthink
-if [ "${currentAppID}" = "com.devon-technologies.think3" ]; then
-     echo $(osascript "/Users/lushuliang/Dev/GitHub/my-alfred-workflows/DEVONthink Helper/list-smart-group.scpt" "工作,思维,知识" ".last" "true" "true")
-
-exit 1
-fi
-# for devonthink
-
-
 
 
 export currentAppPath=$(osascript -e 'tell application "Finder" to get text 1 thru -2 of POSIX path of (path to frontmost application)')
@@ -424,33 +436,25 @@ fi</string>
 		<dict>
 			<key>config</key>
 			<dict>
-				<key>action</key>
-				<integer>0</integer>
-				<key>argument</key>
-				<integer>0</integer>
-				<key>focusedappvariable</key>
-				<false/>
-				<key>focusedappvariablename</key>
-				<string></string>
-				<key>hotkey</key>
-				<integer>0</integer>
-				<key>hotmod</key>
-				<integer>0</integer>
-				<key>hotstring</key>
-				<string></string>
-				<key>leftcursor</key>
-				<false/>
-				<key>modsmode</key>
-				<integer>0</integer>
-				<key>relatedAppsMode</key>
-				<integer>0</integer>
+				<key>json</key>
+				<string>{
+  "alfredworkflow" : {
+    "arg" : "{query}",
+    "config" : {
+      "openwith" : "{var:currentAppPath}",
+      "sourcefile" : ""
+    },
+    "variables" : {
+    }
+  }
+}</string>
 			</dict>
 			<key>type</key>
-			<string>alfred.workflow.trigger.hotkey</string>
+			<string>alfred.workflow.utility.json</string>
 			<key>uid</key>
-			<string>5459E1D5-34AA-4E81-AAC7-8D52C4077AE9</string>
+			<string>BE074103-A87A-4D58-ADC1-B99F5B0B2402</string>
 			<key>version</key>
-			<integer>2</integer>
+			<integer>1</integer>
 		</dict>
 		<dict>
 			<key>config</key>
@@ -513,23 +517,94 @@ fi</string>
 		<dict>
 			<key>config</key>
 			<dict>
-				<key>json</key>
-				<string>{
-  "alfredworkflow" : {
-    "arg" : "{query}",
-    "config" : {
-      "openwith" : "{var:currentAppPath}",
-      "sourcefile" : ""
-    },
-    "variables" : {
-    }
-  }
-}</string>
+				<key>action</key>
+				<integer>0</integer>
+				<key>argument</key>
+				<integer>0</integer>
+				<key>focusedappvariable</key>
+				<false/>
+				<key>focusedappvariablename</key>
+				<string></string>
+				<key>hotkey</key>
+				<integer>0</integer>
+				<key>hotmod</key>
+				<integer>0</integer>
+				<key>hotstring</key>
+				<string></string>
+				<key>leftcursor</key>
+				<false/>
+				<key>modsmode</key>
+				<integer>0</integer>
+				<key>relatedAppsMode</key>
+				<integer>0</integer>
 			</dict>
 			<key>type</key>
-			<string>alfred.workflow.utility.json</string>
+			<string>alfred.workflow.trigger.hotkey</string>
 			<key>uid</key>
-			<string>BE074103-A87A-4D58-ADC1-B99F5B0B2402</string>
+			<string>5459E1D5-34AA-4E81-AAC7-8D52C4077AE9</string>
+			<key>version</key>
+			<integer>2</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>conditions</key>
+				<array>
+					<dict>
+						<key>inputstring</key>
+						<string></string>
+						<key>matchcasesensitive</key>
+						<false/>
+						<key>matchmode</key>
+						<integer>4</integer>
+						<key>matchstring</key>
+						<string>devonthink</string>
+						<key>outputlabel</key>
+						<string>open with devonthink</string>
+						<key>uid</key>
+						<string>DE5F4930-B887-4150-AC5A-8CB90A065BAF</string>
+					</dict>
+					<dict>
+						<key>inputstring</key>
+						<string></string>
+						<key>matchcasesensitive</key>
+						<false/>
+						<key>matchmode</key>
+						<integer>4</integer>
+						<key>matchstring</key>
+						<string>^http(s?):\/\/</string>
+						<key>outputlabel</key>
+						<string>open with safari</string>
+						<key>uid</key>
+						<string>B0F360C9-C006-4C4A-882F-1C17F6A8FC7B</string>
+					</dict>
+				</array>
+				<key>elselabel</key>
+				<string>else</string>
+				<key>hideelse</key>
+				<false/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.utility.conditional</string>
+			<key>uid</key>
+			<string>8E77B0B8-F255-4BD0-80DB-2A076A9D5D51</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>browser</key>
+				<string></string>
+				<key>spaces</key>
+				<string></string>
+				<key>url</key>
+				<string></string>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.openurl</string>
+			<key>uid</key>
+			<string>835A1179-8ED0-4D9D-9005-0E12281DF6D8</string>
 			<key>version</key>
 			<integer>1</integer>
 		</dict>
@@ -621,38 +696,6 @@ fi
 			<key>version</key>
 			<integer>3</integer>
 		</dict>
-		<dict>
-			<key>config</key>
-			<dict>
-				<key>conditions</key>
-				<array>
-					<dict>
-						<key>inputstring</key>
-						<string></string>
-						<key>matchcasesensitive</key>
-						<false/>
-						<key>matchmode</key>
-						<integer>4</integer>
-						<key>matchstring</key>
-						<string>devonthink</string>
-						<key>outputlabel</key>
-						<string>open with devonthink</string>
-						<key>uid</key>
-						<string>DE5F4930-B887-4150-AC5A-8CB90A065BAF</string>
-					</dict>
-				</array>
-				<key>elselabel</key>
-				<string>else</string>
-				<key>hideelse</key>
-				<false/>
-			</dict>
-			<key>type</key>
-			<string>alfred.workflow.utility.conditional</string>
-			<key>uid</key>
-			<string>8E77B0B8-F255-4BD0-80DB-2A076A9D5D51</string>
-			<key>version</key>
-			<integer>1</integer>
-		</dict>
 	</array>
 	<key>readme</key>
 	<string>Website: https://github.com/mpco/AlfredWorkflow-Recent-Documents</string>
@@ -670,9 +713,9 @@ fi
 			<key>note</key>
 			<string>Open with DEVONthink Editor</string>
 			<key>xpos</key>
-			<real>595</real>
+			<real>840</real>
 			<key>ypos</key>
-			<real>335</real>
+			<real>230</real>
 		</dict>
 		<key>53BF5810-7308-4550-A1C3-92DC01964658</key>
 		<dict>
@@ -695,19 +738,26 @@ fi
 			<key>ypos</key>
 			<real>50</real>
 		</dict>
+		<key>835A1179-8ED0-4D9D-9005-0E12281DF6D8</key>
+		<dict>
+			<key>xpos</key>
+			<real>880</real>
+			<key>ypos</key>
+			<real>530</real>
+		</dict>
 		<key>8E77B0B8-F255-4BD0-80DB-2A076A9D5D51</key>
 		<dict>
 			<key>xpos</key>
-			<real>440</real>
+			<real>585</real>
 			<key>ypos</key>
-			<real>560</real>
+			<real>400</real>
 		</dict>
 		<key>9F8BAD89-AA36-49E3-AC08-2F634A88C595</key>
 		<dict>
 			<key>xpos</key>
-			<real>700</real>
+			<real>750</real>
 			<key>ypos</key>
-			<real>50</real>
+			<real>20</real>
 		</dict>
 		<key>B4CFDC4F-AF3F-47C2-8100-476F7E6FF72E</key>
 		<dict>
@@ -730,9 +780,9 @@ fi
 		<key>BE074103-A87A-4D58-ADC1-B99F5B0B2402</key>
 		<dict>
 			<key>xpos</key>
-			<real>760</real>
+			<real>730</real>
 			<key>ypos</key>
-			<real>500</real>
+			<real>240</real>
 		</dict>
 		<key>D172CEA8-0DE7-4AA2-BBDA-7819B2252316</key>
 		<dict>
